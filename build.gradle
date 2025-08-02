@@ -4,8 +4,10 @@ plugins {
     id 'maven-publish'
     id 'org.openjfx.javafxplugin' version '0.0.7'
     //id 'net.nemerosa.versioning' version '2.8.2'
-    id 'com.jfrog.bintray' version '1.8.4'
 }
+
+group = 'eu.mihosoft.jcsg'
+version = '0.5.8-SNAPSHOT'
 
 sourceCompatibility = '11'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -26,7 +28,6 @@ mainClassName = mainClass
 
 repositories {
     mavenCentral()
-    jcenter()
     
     mavenLocal()
 }
@@ -42,14 +43,13 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadoc.destinationDir
 }
 
 // create one jar for the source files
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from sourceSets.main.allSource
 }
 
@@ -61,13 +61,13 @@ artifacts {
 
 dependencies {
     
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testImplementation group: 'junit', name: 'junit', version: '4.+'
 
    // compile group: 'eu.mihosoft.ext.org.fxyz', name: 'extfxyz', version: '0.4'
     //compile group: 'eu.mihosoft.ext.org.fxyz', name: 'extfxyz', version: '0.4', classifier: 'sources'
-    compile group: 'eu.mihosoft.vvecmath', name: 'vvecmath', version: '0.3.8'
-    compile group: 'eu.mihosoft.vvecmath', name: 'vvecmath', version: '0.3.8', classifier: 'sources'
-    compile 'org.slf4j:slf4j-simple:1.6.1'
+    implementation group: 'eu.mihosoft.vvecmath', name: 'vvecmath', version: '0.3.8'
+    implementation group: 'eu.mihosoft.vvecmath', name: 'vvecmath', version: '0.3.8', classifier: 'sources'
+    implementation 'org.slf4j:slf4j-simple:1.6.1'
 }
 
 Date buildTimeAndDate = new Date()
@@ -77,7 +77,7 @@ ext {
 }
 
 // create a fat-jar (class files plus dependencies
-// excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
+// excludes VRL.jar (plugin jar files must not start with 'vrl-\d+')
 jar {
 
 
@@ -154,26 +154,5 @@ publishing {
                 root.children().last() + pomConfig
             }
         }
-    }
-}
-
-if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
-if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
-
-bintray {
-    user = project.bintrayUsername
-    key = project.bintrayApiKey
-    publications = ['mavenCustom']
-    pkg {
-        repo                  = 'JCSG'
-        userOrg               = 'miho'
-        name                  = project.name
-        desc                  = 'Java implementation of BSP based CSG (Constructive Solid Geometry)'
-        licenses              = ['BSD 2-Clause']
-        labels                = ['javafx', 'java',  'CSG', 'Constructive Solid Geometry',  'VRL',  '3D',  'STL',  'OBJ']
-        websiteUrl            = 'https://github.com/miho/JCSG/wiki'
-        issueTrackerUrl       = 'https://github.com/miho/JCSG/issues'
-        vcsUrl                = 'git@github.com:miho/JCSG.git'
-        publicDownloadNumbers = true
     }
 }
